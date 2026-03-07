@@ -1,0 +1,144 @@
+# ==========================================================
+# PLAYBOOK: Configuração de Servidor Ubuntu como Gateway NAT
+#
+# Objetivo:
+#   Configurar um servidor Ubuntu para atuar como Gateway NAT,
+#   permitindo que uma rede interna tenha acesso à internet
+#   através de uma interface WAN.
+#
+# Cenário:
+#   Utilizado para:
+#   - Laboratórios de Redes com múltiplas VMs
+#   - Pequenas empresas sem roteador dedicado
+#   - Ambientes de testes e simulação
+#   - Segmentação simples LAN/WAN
+#
+# Funcionamento:
+#   - Instala iptables-persistent para manter regras após reboot
+#   - Ativa IP Forward em tempo de execução
+#   - Garante persistência do IP Forward no sysctl.conf
+#   - Cria regra NAT (MASQUERADE) na tabela nat
+#   - Permite tráfego LAN → WAN
+#   - Permite tráfego de retorno WAN → LAN (ESTABLISHED, RELATED)
+#   - Salva regras permanentemente
+#   - Gera relatório simples em arquivo de log
+#
+# Diferencial Técnico:
+#   - Uso de variáveis para interfaces e rede LAN
+#   - Idempotência garantida pelo módulo iptables
+#   - Persistência automática de regras
+#   - Geração de evidência de configuração via arquivo de log
+#   - Estrutura adaptável para ambientes virtualizados
+#
+# Autor: Francklin Leandro
+# Data: 23/02/2026
+#
+# Requisitos:
+#   - ansible
+#   - Ubuntu Server 20.04 ou 22.04
+#   - Duas interfaces de rede (WAN e LAN)
+#   - Permissão sudo no host gerenciado
+#
+# Inventário:
+#   Grupo: servidores
+#
+# Uso:
+#   ansible-playbook -i hosts.ini gateway_nat.yml
+# ==========================================================
+
+- name: Configurar Ubuntu como Gateway NAT
+  hosts: servidores
+  become: true # Executa todas as tarefas com privilégio administrativo (sudo)
+
+  vars: # Variáveis reutilizáveis ao longo do playbook.
+    interface_wan: xxxx
+    interface_lan: xxxx
+    rede_lan: 10.x.x.x/24
+
+  tasks:
+
+    # ------------------------------------------------------
+    # Instala pacote para persistência de regras
+    # ------------------------------------------------------
+    - name: Instalar iptables-persistent
+      apt: # Gerenciar pacotes no Ubuntu/Debian
+        name: iptables-persistent
+        state: present # Garante que o pacote esteja instalado
+        update_cache: yes # Atualiza a lista de pacotes antes da instalação
+
+    # ------------------------------------------------------
+    # Ativar IP Forward temporariamente
+    # ------------------------------------------------------
+    - name: Ativar IP Forward (runtime) # IP FOWARD permite que um sistema Linux atue como roteador
+      sysctl: # Módulo responsável por alterar parâmetros do kernel
+        name: net.ipv4.ip_forward # Controla o roteamento entre interfaces
+        value: '1' # Ativa o encaminhamento de pacotes IPv4
+        state: present # Garante que o valor esteja definido
+        reload: yes # Aplica a alteração imediatamente no sistema
+
+    # ------------------------------------------------------
+    # Garantir persistência no sysctl.conf
+    # ------------------------------------------------------
+    - name: Garantir IP Forward permanente
+      lineinfile: # Garante a presença de uma linha específica em um arquivo
+        path: /etc/sysctl.conf # Arquivo de configuração permanente do sysctl
+        line: "net.ipv4.ip_forward=1" # Linha que será garantida no arquivo para manter o IP Forward após reboot
+        state: present # Evita duplicação da linha
+
+    # ------------------------------------------------------
+    # Configurar regra de NAT (Masquerade)
+    # ------------------------------------------------------
+    - name: Configurar NAT para rede interna
+      iptables:
+        table: nat # Define que a regra será criada na tabela NAT
+        chain: POSTROUTING # Cadeia responsável por modificar pacotes após decisão de roteamento
+        source: "{{ rede_lan }}" # Aplica a regra apenas para pacotes originados da rede interna
+        out_interface: "{{ interface_wan }}" # Aplica a regra somente quando o tráfego sair pela interface WAN
+        jump: MASQUERADE # Realiza NAT dinâmico, substituindo o IP de origem pelo IP da interface WAN
+
+    # ------------------------------------------------------
+    # Permitir encaminhamento LAN -> WAN
+    # ------------------------------------------------------
+    - name: Permitir Forward da LAN para WAN
+      iptables:
+        chain: FORWARD # Cadeia responsável por controlar tráfego que passa pela máquina (roteamento)
+        in_interface: "{{ interface_lan }}" # Aplica a regra apenas para tráfego vindo da LAN
+        out_interface: "{{ interface_wan }}" # Aplica somente quando o destino for a WAN
+        jump: ACCEPT # Permite o tráfego
+
+    # ------------------------------------------------------
+    # Permitir tráfego de retorno WAN -> LAN
+    # ------------------------------------------------------
+    - name: Permitir tráfego estabelecido de retorno
+      iptables:
+        chain: FORWARD
+        in_interface: "{{ interface_wan }}"
+        out_interface: "{{ interface_lan }}"
+        ctstate: ESTABLISHED,RELATED # Permite apenas conexões já iniciadas ou relacionadas
+        jump: ACCEPT
+
+    # ------------------------------------------------------
+    # Salvar regras permanentemente
+    # ------------------------------------------------------
+    - name: Salvar regras iptables
+      command: netfilter-persistent save
+
+    # ------------------------------------------------------
+    # Gerar relatório simples
+    # ------------------------------------------------------
+    - name: Gerar relatório de configuração NAT
+      copy:
+        dest: /var/log/gateway_nat_configurado.txt
+        content: |
+          =====================================
+          SERVIDOR CONFIGURADO COMO GATEWAY NAT
+          =====================================
+          Host: {{ inventory_hostname }}
+          Data: {{ ansible_date_time.date }}
+
+          Interface WAN: {{ interface_wan }}
+          Interface LAN: {{ interface_lan }}
+          Rede LAN: {{ rede_lan }}
+
+          IP Forward: Ativado
+          NAT: Configurado com MASQUERADE
