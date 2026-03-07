@@ -1,0 +1,73 @@
+# ==========================================================
+# PLAYBOOK: Padronização Básica de Servidor Linux
+#
+# Objetivo:
+#   Realizar configuração inicial padronizada em servidores Linux,
+#   garantindo atualização do sistema, instalação de ferramentas
+#   essenciais de rede e preparação do ambiente para troubleshooting.
+#
+# Cenário:
+#   Utilizado para:
+#   - Preparação inicial de novos servidores
+#   - Padronização de ambiente em laboratório
+#   - Ambiente corporativo pós-instalação
+#   - Garantir ferramentas mínimas para suporte de rede
+#
+# Funcionamento:
+#   - Atualiza o cache de pacotes do apt
+#   - Instala ferramentas essenciais de diagnóstico de rede
+#     (net-tools, mtr, tcpdump)
+#   - Garante que o serviço SSH esteja ativo e habilitado
+#     para iniciar automaticamente
+#   - Cria diretório dedicado para armazenamento de logs de rede
+#
+# Diferencial Técnico:
+#   - Uso de become para execução privilegiada
+#   - Idempotência garantida pelo Ansible
+#   - Estrutura simples para expansão futura
+#   - Compatível com ambientes Ubuntu/Debian
+#
+# Autor: Francklin Leandro
+# Data: 23/02/2026
+#
+# Requisitos:
+#   - ansible
+#   - Acesso SSH ao host remoto
+#   - Permissão sudo no host gerenciado
+#
+# Inventário:
+#   Grupo: server
+#
+# Uso:
+#   ansible-playbook -i hosts.ini server-playbook.yml
+# ==========================================================
+
+- name: Padronização básica de servidor
+  hosts: server
+  become: yes # Executa todas as tarefas com privilégio administrativo (sudo)
+
+  tasks:
+
+    - name: Atualizar cache do apt
+      apt: # Gerenciar pacotes no Ubuntu/Debian
+        update_cache: yes # Atualiza a lista de pacotes
+
+    - name: Instalar ferramentas de rede
+      apt:
+        name:
+          - net-tools
+          - mtr
+          - tcpdump
+        state: present # Garante que os pacotes estejam instalados
+
+    - name: Garantir que o SSH esteja ativo
+      service:
+        name: ssh
+        state: started # Serviço deve estar rodando
+        enabled: yes # Habilita o serviço para iniciar automaticamente no boot
+
+    - name: Criar diretório de logs de rede
+      file:
+        path: /var/log/rede
+        state: directory
+        mode: '0755'
