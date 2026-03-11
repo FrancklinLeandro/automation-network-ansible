@@ -43,7 +43,7 @@
 #   Grupo: servidores
 #
 # Uso:
-#   ansible-playbook -i hosts.ini gateway_nat.yml
+#   ansible-playbook -i hosts.ini gateway_nat.yml -k -K
 # ==========================================================
 
 - name: Configurar Ubuntu como Gateway NAT
