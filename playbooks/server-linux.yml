@@ -39,7 +39,7 @@
 #   Grupo: server
 #
 # Uso:
-#   ansible-playbook -i hosts.ini server-linux.yml
+#   ansible-playbook -i hosts.ini server-linux.yml -k -K
 # ==========================================================
 
 - name: Padronização básica de servidor
