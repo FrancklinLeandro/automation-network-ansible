@@ -37,16 +37,6 @@ Cada playbook contém **comentários detalhados no próprio código**, incluindo
 
 ---
 
-## Estrutura do Repositório
-```
-automation-network-ansible/
-├── network-config/
-│   └── 
-├── server-management/
-    └──
-└── README.md
-```
-
 ## Playbooks
 ### server-linux.yml
 Playbook Ansible para **padronização inicial de servidores Linux**, realizando atualização do sistema, instalação de **ferramentas essenciais de diagnóstico de rede** e garantindo que o **serviço SSH esteja ativo**, além de preparar um diretório para logs de rede.
@@ -64,4 +54,14 @@ Playbook Ansible para **configurar um servidor Ubuntu como Gateway NAT**, permit
 
 ```bash
 ansible-playbook -i hosts.ini gateway_nat.yml -k -K
+```
+
+## Estrutura do Repositório
+```
+automation-network-ansible/
+├── network-config/
+│   └── gateway_nat.yml
+├── server-management/
+    └── server-linux.yml
+└── README.md
 ```
