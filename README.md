@@ -62,6 +62,6 @@ automation-network-ansible/
 ├── network-config/
 │   └── gateway_nat.yml
 ├── server-management/
-    └── server-linux.yml
+│   └── server-linux.yml
 └── README.md
 ```
