@@ -37,19 +37,21 @@ Cada playbook contém **comentários detalhados no próprio código**, incluindo
 
 ---
 
-## Playbooks Disponíveis
+## Playbooks
+### server-linux.yml
+Playbook Ansible para **padronização inicial de servidores Linux**, realizando atualização do sistema, instalação de **ferramentas essenciais de diagnóstico de rede** e garantindo que o **serviço SSH esteja ativo**, além de preparar um diretório para logs de rede.
 
-Atualmente o repositório possui **2 playbooks**, incluindo:
+**Uso:**
 
-- server-playbook.yml
-- gateway_nat.yml
-  
----
+```bash
+ansible-playbook -i hosts.ini server-linux.yml -k -K
+```
 
-## Dependências
+### gateway_nat.yml
+Playbook Ansible para **configurar um servidor Ubuntu como Gateway NAT**, permitindo que uma rede interna acesse a internet através de uma interface WAN, com **IP Forward habilitado e regras de NAT persistentes via iptables**.
 
-Algumas automações podem exigir:
+**Uso:**
 
-- ansible
-- acesso SSH aos dispositivos
-- python3 (nos hosts gerenciados)
+```bash
+ansible-playbook -i hosts.ini gateway_nat.yml -k -K
+```
