@@ -44,11 +44,13 @@
 
 - name: Padronização básica de servidor
   hosts: server
+  # Define que será executado em todos os hosts do grupo "server"
+  
   become: yes # Executa todas as tarefas com privilégio administrativo (sudo)
 
   tasks:
 
-    - name: Atualizar cache do apt
+    - name: Atualizar cache do apt # Nome da tarefa
       apt: # Gerenciar pacotes no Ubuntu/Debian
         update_cache: yes # Atualiza a lista de pacotes
 
