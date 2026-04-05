@@ -59,6 +59,8 @@ ansible-playbook -i hosts.ini gateway_nat.yml -k -K
 ## Estrutura do Repositório
 ```
 automation-network-ansible/
+├── diagnostics/
+│   └── auditoria_rede.yml
 ├── network-config/
 │   └── gateway_nat.yml
 ├── server-management/
