@@ -57,19 +57,25 @@
     - name: Instalar ferramentas de rede
       apt:
         name:
+        # Lista de pacotes a serem instalados
           - net-tools
+          # Ferramentas clássicas como ifconfig e netstat
           - mtr
+           # Ferramenta de diagnóstico de rota (ping + traceroute)
           - tcpdump
+          # Captura de pacotes na rede
         state: present # Garante que os pacotes estejam instalados
 
     - name: Garantir que o SSH esteja ativo
       service:
+      # Módulo para gerenciar serviços do sistema
         name: ssh
         state: started # Serviço deve estar rodando
         enabled: yes # Habilita o serviço para iniciar automaticamente no boot
 
     - name: Criar diretório de logs de rede
       file:
-        path: /var/log/rede
-        state: directory
-        mode: '0755'
+      # Módulo para manipulação de arquivos e diretórios
+        path: /var/log/rede # Caminho do diretório a ser criado
+        state: directory # Garante que seja um diretório (cria se não existir)
+        mode: '0755' # Permissões: dono leitura/escrita/execução, outros leitura/execução
