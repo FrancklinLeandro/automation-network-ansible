@@ -48,6 +48,8 @@
 
 - name: Configurar Ubuntu como Gateway NAT
   hosts: servidores
+  # Define que será executado em todos os hosts do grupo "servidores"
+  
   become: true # Executa todas as tarefas com privilégio administrativo (sudo)
 
   vars: # Variáveis reutilizáveis ao longo do playbook.
@@ -60,7 +62,7 @@
     # ------------------------------------------------------
     # Instala pacote para persistência de regras
     # ------------------------------------------------------
-    - name: Instalar iptables-persistent
+    - name: Instalar iptables-persistent # Nome da tarefa
       apt: # Gerenciar pacotes no Ubuntu/Debian
         name: iptables-persistent
         state: present # Garante que o pacote esteja instalado
@@ -127,9 +129,9 @@
     # Gerar relatório simples
     # ------------------------------------------------------
     - name: Gerar relatório de configuração NAT
-      copy:
-        dest: /var/log/gateway_nat_configurado.txt
-        content: |
+      copy: # Módulo usado para criar arquivo no host remoto
+        dest: /var/log/gateway_nat_configurado.txt # Caminho onde o relatório será salvo
+        content: | # Define conteúdo do arquivo
           =====================================
           SERVIDOR CONFIGURADO COMO GATEWAY NAT
           =====================================
