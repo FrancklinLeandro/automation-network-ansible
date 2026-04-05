@@ -90,19 +90,16 @@
           RELATÓRIO DE AUDITORIA DE REDE
           =====================================
           Host: {{ inventory_hostname }}
-        
-          # Nome do host sendo processado
           Data: {{ ansible_date_time.date }}
-          # Data coletada automaticamente pelo Ansible
 
           ---------- Interfaces ----------
-          {{ interfaces.stdout }}  # Insere saída do comando ip addr
+          {{ interfaces.stdout }} 
 
           ---------- Tabela de Rotas ----------
-          {{ rotas.stdout }} # Insere saída do comando ip route
+          {{ rotas.stdout }} 
 
           ---------- Portas Abertas ----------
-          {{ portas.stdout }} # Insere saída do comando ss
+          {{ portas.stdout }} 
 
           ---------- Teste de Conectividade ----------
-          {{ conectividade.stdout }} # Insere saída do ping (mesmo que falhe)
+          {{ conectividade.stdout }} 
