@@ -1,0 +1,107 @@
+# ==========================================================
+# PLAYBOOK: Coleta de Informações de Rede
+#
+# Objetivo:
+#   Realizar auditoria básica de rede em servidores Linux,
+#   coletando informações essenciais para diagnóstico e
+#   inventário de infraestrutura.
+#
+# Cenário:
+#   Utilizado para:
+#   - Auditoria rápida de servidores
+#   - Troubleshooting de conectividade
+#   - Levantamento de informações de rede
+#   - Inventário técnico em ambientes corporativos
+#
+# Funcionamento:
+#   - Coleta informações de interfaces e endereços IP (ip addr)
+#   - Coleta tabela de rotas (ip route)
+#   - Lista portas em escuta no sistema (ss -tuln)
+#   - Testa conectividade externa via ICMP (ping)
+#   - Armazena todos os dados em relatório local no servidor
+#
+# Diferencial Técnico:
+#   - Uso de register para capturar saída dos comandos
+#   - Consolidação de múltiplas informações em único relatório
+#   - Execução simples e direta sem dependências externas
+#   - Estrutura útil para diagnóstico rápido em campo
+#   - Geração de evidência persistente no servidor
+#
+# Autor: Francklin Leandro
+# Data: 05/04/2026
+#
+# Requisitos:
+#   - ansible
+#   - Ubuntu Server 20.04 ou 22.04
+#   - Permissão sudo no host gerenciado
+#
+# Inventário:
+#   Grupo: servidores
+#
+# Uso:
+#   ansible-playbook -i hosts.ini auditoria_rede.yml -k -K
+# ==========================================================
+
+- name: Auditoria de rede em servidores
+  hosts: servidores
+  # Define que será executado em todos os hosts do grupo "servidores"
+
+  become: true # Executa todas as tarefas com privilégio administrativo (sudo)
+
+  tasks: # Início da lista de tarefas que serão executadas
+
+    # ------------------------------------------------------
+    # Coletar interfaces e endereços IP
+    # ------------------------------------------------------
+    - name: Coletar informações de interfaces # Nome da tarefa
+      command: ip addr # Executa comando que lista interfaces e IPs
+      register: interfaces # Armazena a saída do comando na variável "interfaces"
+
+    # ------------------------------------------------------
+    # Coletar tabela de rotas
+    # ------------------------------------------------------
+    - name: Coletar tabela de rotas
+      command: ip route # Mostra tabela de roteamento do sistema
+      register: rotas # Guarda a saída na variável "rotas"
+
+    # ------------------------------------------------------
+    # Listar portas abertas
+    # ------------------------------------------------------
+    - name: Verificar portas em escuta
+      command: ss -tuln # Lista portas TCP/UDP abertas em modo escuta
+      register: portas # Armazena saída na variável "portas"
+
+    # ------------------------------------------------------
+    # Testar conectividade externa
+    # ------------------------------------------------------
+    - name: Testar conectividade com Google DNS
+      command: ping -c 3 8.8.8.8 # Testa conectividade enviando 3 pacotes 
+      register: conectividade # Armazena resultado do ping na variável "conectividade"
+      ignore_errors: yes # Evita falha do playbook caso o ping não funcione
+
+    # ------------------------------------------------------
+    # Gerar relatório de rede no servidor
+    # ------------------------------------------------------
+    - name: Criar relatório de auditoria
+      copy: # Módulo usado para criar arquivo no host remoto
+        dest: /var/log/auditoria_rede_servidor.txt # Caminho onde o relatório será salvo
+        content: | # Define conteúdo do arquivo
+          =====================================
+          RELATÓRIO DE AUDITORIA DE REDE
+          =====================================
+          Host: {{ inventory_hostname }}
+          # Nome do host sendo processado
+          Data: {{ ansible_date_time.date }}
+          # Data coletada automaticamente pelo Ansible
+
+          ---------- Interfaces ----------
+          {{ interfaces.stdout }}  # Insere saída do comando ip addr
+
+          ---------- Tabela de Rotas ----------
+          {{ rotas.stdout }} # Insere saída do comando ip route
+
+          ---------- Portas Abertas ----------
+          {{ portas.stdout }} # Insere saída do comando ss
+
+          ---------- Teste de Conectividade ----------
+          {{ conectividade.stdout }} # Insere saída do ping (mesmo que falhe)
