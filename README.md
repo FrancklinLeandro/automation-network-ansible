@@ -56,8 +56,18 @@ Playbook Ansible para **configurar um servidor Ubuntu como Gateway NAT**, permit
 ansible-playbook -i hosts.ini gateway_nat.yml -k -K
 ```
 
+### auditoria_rede.yml
+Playbook Ansible para **auditoria básica de rede em servidores Linux**, coletando interfaces, rotas, portas e conectividade, com geração de relatório local no host.
+
+**Uso:**
+
+```bash
+ansible-playbook -i hosts.ini auditoria_rede.yml -k -K
+```
+
 ## Estrutura do Repositório
 ```
+
 automation-network-ansible/
 ├── diagnostics/
 │   └── auditoria_rede.yml
