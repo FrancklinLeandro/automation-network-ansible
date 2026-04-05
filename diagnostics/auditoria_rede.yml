@@ -90,6 +90,7 @@
           RELATÓRIO DE AUDITORIA DE REDE
           =====================================
           Host: {{ inventory_hostname }}
+        
           # Nome do host sendo processado
           Data: {{ ansible_date_time.date }}
           # Data coletada automaticamente pelo Ansible
