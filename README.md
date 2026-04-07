@@ -71,6 +71,8 @@ ansible-playbook -i hosts.ini auditoria_rede.yml -k -K
 automation-network-ansible/
 ├── diagnostics/
 │   └── auditoria_rede.yml
+├── monitoring/
+│   └── netdata_docker.yml
 ├── network-config/
 │   └── gateway_nat.yml
 ├── server-management/
