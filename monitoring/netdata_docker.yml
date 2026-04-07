@@ -1,0 +1,211 @@
+# ==========================================================
+# PLAYBOOK: Deploy de Netdata via Docker
+#
+# Objetivo:
+#   Automatizar a instalação do Docker e realizar o deploy
+#   do Netdata em container, disponibilizando monitoramento
+#   em tempo real via interface web.
+#
+# Cenário:
+#   Utilizado para:
+#   - Monitoramento rápido de servidores
+#   - Ambientes de laboratório e testes
+#   - Pequenos ambientes de produção
+#   - Evitar instalação manual de ferramentas de monitoramento
+#
+# Funcionamento:
+#   - Atualiza cache de pacotes do sistema
+#   - Instala dependências necessárias para o Docker
+#   - Adiciona chave GPG oficial do Docker
+#   - Adiciona repositório oficial do Docker
+#   - Instala Docker Engine (docker-ce)
+#   - Garante que o serviço Docker esteja ativo e habilitado
+#   - Realiza deploy do container Netdata com network_mode host
+#   - Configura volumes persistentes do Netdata
+#   - Libera porta no firewall (UFW)
+#   - Gera relatório com informações de acesso
+#
+# Diferencial Técnico:
+#   - Deploy completo via container (sem instalação manual)
+#   - Uso de network_mode host para acesso direto às métricas
+#   - Persistência de dados com volumes Docker
+#   - Integração com firewall (UFW)
+#   - Geração de evidência de deploy com URL pronta
+#
+# Autor: Francklin Leandro
+# Data: 06/04/2026
+#
+# Requisitos:
+#   - ansible
+#   - Ubuntu Server 20.04 ou 22.04
+#   - Permissão sudo no host gerenciado
+#   - Acesso à internet para download de pacotes e imagens
+#
+# Inventário:
+#   Grupo: servidores
+#
+# Uso:
+#   ansible-playbook -i hosts.ini netdata_docker.yml -k -K
+# ==========================================================
+
+- name: Deploy de monitoramento com Netdata via Docker
+  hosts: servidores  # Define que será executado em todos os hosts do grupo "servidores"
+  become: true # Executa todas as tarefas com privilégio administrativo (sudo)
+
+  vars: # Variáveis reutilizáveis ao longo do playbook.
+    porta_netdata: 19999 # Porta padrão onde o Netdata ficará acessível
+
+  tasks: # Início da lista de tarefas que serão executadas
+
+    # ------------------------------------------------------
+    # Atualizar cache
+    # ------------------------------------------------------
+    - name: Atualizar cache do APT # Nome da tarefa
+      apt: # Gerenciar pacotes no Ubuntu/Debian
+        update_cache: yes # Atualiza a lista de pacotes antes da instalação
+
+    # ------------------------------------------------------
+    # Instalar dependências do Docker
+    # ------------------------------------------------------
+    - name: Instalar pacotes necessários
+      apt:
+        name: # Lista de pacotes a serem instalados
+          - apt-transport-https 
+            # Permite uso de repositórios via HTTPS
+          - ca-certificates 
+            # Garante validação de certificados SSL
+          - curl 
+            # Utilitário para download de arquivos (usado em integrações)
+          - software-properties-common
+            # Facilita gerenciamento de repositórios
+        state: present
+        # Garante que os pacotes estejam instalados
+
+    # ------------------------------------------------------
+    # Adicionar chave GPG do Docker
+    # ------------------------------------------------------
+    - name: Adicionar chave GPG do Docker
+      apt_key: 
+      #Módulo usado para gerenciar chaves GPG de repositórios APT
+
+        url: https://download.docker.com/linux/ubuntu/gpg
+        # URL da chave oficial do Docker
+
+        state: present
+        # Garante que a chave esteja instalada
+
+    # ------------------------------------------------------
+    # Adicionar repositório Docker
+    # ------------------------------------------------------
+    - name: Adicionar repositório Docker
+      apt_repository:
+      # Módulo usado para gerenciar repositórios APT
+
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        # Adiciona repositório oficial (focal = Ubuntu 20.04)
+
+        state: present
+        # Garante que o repositório esteja configurado
+
+    # ------------------------------------------------------
+    # Instalar Docker
+    # ------------------------------------------------------
+    - name: Instalar Docker
+      apt:
+        name: docker-ce
+         # Instala o Docker Community Edition
+
+        state: present
+        # Garante instalação
+
+        update_cache: yes
+        # Atualiza cache após adicionar repositório
+
+    # ------------------------------------------------------
+    # Garantir que Docker está ativo
+    # ------------------------------------------------------
+    - name: Iniciar e habilitar Docker
+      service: # Módulo para gerenciar serviços do sistema
+        name: docker
+        state: started # Serviço deve estar rodando
+        enabled: yes # Habilita o serviço para iniciar automaticamente no boot
+
+    # ------------------------------------------------------
+    # Rodar container Netdata
+    # ------------------------------------------------------
+    - name: Subir container Netdata
+      docker_container:
+      # Módulo para gerenciar containers Docker
+
+        name: netdata
+        # Nome do container
+
+        image: netdata/netdata:latest
+        # Imagem oficial do Netdata
+
+        state: started
+        # Garante que o container esteja em execução
+
+        restart_policy: always
+        # Reinicia automaticamente se parar
+
+        network_mode: host
+        # Usa rede do host (sem NAT, acesso direto)
+
+        capabilities:
+          - SYS_PTRACE
+            # Permissão necessária para coletar métricas detalhadas
+
+        security_opts:
+          - apparmor=unconfined
+            # Remove restrições de segurança do AppArmor
+ 
+        volumes:
+          - netdataconfig:/etc/netdata
+            # Volume para configuração
+
+          - netdatalib:/var/lib/netdata
+            # Volume para dados persistentes
+
+          - netdatacache:/var/cache/netdata
+            # Volume para cache
+                               
+    
+    # ------------------------------------------------------
+    # Instala o firewall (UFW), caso não exista
+    # ------------------------------------------------------
+    - name: Instalar UFW
+      apt:
+        name: ufw
+        state: present # Garante instalação
+
+    # ------------------------------------------------------
+    # Liberar porta no firewall (UFW)
+    # ------------------------------------------------------
+    - name: Liberar acesso ao Netdata
+      ufw:
+        rule: allow # Permite tráfego
+        port: "{{ porta_netdata }}"
+        # Porta definida na variável
+        proto: tcp
+        # Protocolo TCP
+
+    # ------------------------------------------------------
+    # Gerar relatório de deploy
+    # ------------------------------------------------------
+    - name: Gerar relatório do monitoramento
+      copy: 
+      # Módulo usado para criar arquivo no host remoto
+        dest: /var/log/netdata_deploy.txt # Caminho onde o relatório será salvo
+        content: | # Define conteúdo do arquivo
+          =====================================
+          NETDATA DEPLOY VIA DOCKER
+          =====================================
+          Host: {{ inventory_hostname }}
+          Data: {{ ansible_date_time.date }}
+
+          Serviço: Netdata
+          Porta: {{ porta_netdata }}
+
+          Acesso:
+          http://{{ inventory_hostname  }}:{{ porta_netdata }}
