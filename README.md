@@ -65,6 +65,15 @@ Playbook Ansible para **auditoria básica de rede em servidores Linux**, coletan
 ansible-playbook -i hosts.ini auditoria_rede.yml -k -K
 ```
 
+### netdata_docker.yml
+Playbook Ansible para **deploy do Netdata via Docker**, automatizando instalação do Docker, execução do container e liberação de acesso via firewall, com geração de relatório de acesso ao monitoramento.
+
+**Uso:**
+
+```bash
+ansible-playbook -i hosts.ini netdata_docker.yml -k -K
+```
+
 ## Estrutura do Repositório
 ```
 
