@@ -2,7 +2,7 @@
 
 ## Objetivo do Repositório
 
-Este repositório contém **playbooks Ansible** voltados para automação em **Infraestrutura de Redes**.
+Este repositório contém **playbooks Ansible** voltados para automação em **Infraestrutura, Redes, suporte e segurança**.
 
 O foco é:
 
