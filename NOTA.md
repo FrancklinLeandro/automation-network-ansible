@@ -1,7 +1,10 @@
-# 📝 Nota sobre este Repositório
+# 📝 Nota sobre o Repositório
 
-Os playbooks Ansible deste repositório estão atualmente **em desenvolvimento**.
+Este repositório está em evolução contínua, com desenvolvimento progressivo de playbooks Ansible voltados para **infraestrutura Linux, redes e automação de ambientes**.
 
-Novos playbooks estão sendo adicionados progressivamente.
+Os playbooks são aprimorados com foco em:
+- provisionamento e padronização de servidores  
+- automação de tarefas administrativas  
+- deploy de serviços e monitoramento  
 
-Acompanhe o repositório para novidades. 🚀
+Novas automações, melhorias e otimizações são adicionadas continuamente.
