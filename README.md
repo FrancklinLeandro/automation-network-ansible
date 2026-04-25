@@ -1,82 +1,65 @@
-# automation-network-ansible
+# 🚀 automation-network-ansible
 
-## Objetivo do Repositório
+## 🎯 Objetivo
 
-Este repositório contém **playbooks Ansible** voltados para automação em **Infraestrutura, Redes, suporte e segurança**.
+Repositório de automação com **Ansible** voltado para **infraestrutura Linux, redes e operações**, com foco em **provisionamento, padronização e deploy de serviços**.
 
-O foco é:
+Os playbooks foram desenvolvidos para automatizar cenários reais de:
 
-- Administração de servidores Linux
-- Troubleshooting automatizado
-- Padronização de ambientes
-- Infraestrutura de redes
-- Execução remota de comandos em equipamentos
-
-Os playbooks são desenvolvidos para uso prático em **laboratórios e ambientes corporativos**.
+- Provisionamento de servidores Linux  
+- Configuração de rede e gateway  
+- Monitoramento de infraestrutura  
+- Auditoria e troubleshooting  
+- Deploy automatizado de serviços  
 
 ---
 
-## Tipos de Automações
+## 🔥 Casos de Uso
 
-Este repositório inclui automações como:
+Os playbooks simulam atividades comuns em ambientes de:
 
-- Padronização inicial de servidores Linux
-- Instalação de ferramentas de diagnóstico de rede
-- Configuração automatizada de gateway NAT
-- Ativação de roteamento IP em servidores Linux
-- Criação e persistência de regras de firewall (iptables)
-- Preparação de ambiente para troubleshooting
-- Execução remota de configurações de rede
-- Padronização de configurações em servidores Ubuntu
-
-Cada playbook contém **comentários detalhados no próprio código**, incluindo:
-
-- objetivo
-- cenário real de uso
-- explicação das tarefas executadas
+- Infraestrutura Linux  
+- NOC (Network Operations Center)  
+- Operações de rede  
+- Automação de ambientes (Infra as Code)  
 
 ---
 
-## Playbooks
-### server-linux.yml
-Playbook Ansible para **padronização inicial de servidores Linux**, realizando atualização do sistema, instalação de **ferramentas essenciais de diagnóstico de rede** e garantindo que o **serviço SSH esteja ativo**, além de preparar um diretório para logs de rede.
+## 🛠️ Tipos de Automação
 
-**Uso:**
+- Padronização inicial de servidores Linux  
+- Instalação automatizada de ferramentas  
+- Configuração de gateway NAT (roteamento e NAT)  
+- Gerenciamento de firewall com iptables  
+- Auditoria de rede e coleta de informações  
+- Deploy de monitoramento com Docker  
+- Execução remota de tarefas administrativas  
 
-```bash
-ansible-playbook -i hosts.ini server-linux.yml -k -K
+Todos os playbooks incluem:
+- cenários reais de uso  
+- comentários explicativos  
+- organização modular  
+
+---
+
+## 📂 Playbooks
+
+### 🖥️ server-linux.yml
+Provisionamento inicial de servidores Linux com instalação de ferramentas e configuração básica
+
+### 🌐 gateway_nat.yml
+Configuração de servidor como **Gateway NAT**, com IP Forward e regras persistentes
+
+### 🔍 auditoria_rede.yml
+Auditoria de rede com coleta de interfaces, rotas, portas e conectividade
+
+### 📊 netdata_docker.yml
+Deploy automatizado de monitoramento com **Netdata via Docker**
+
+---
+
+## 🗂️ Estrutura
 ```
-
-### gateway_nat.yml
-Playbook Ansible para **configurar um servidor Ubuntu como Gateway NAT**, permitindo que uma rede interna acesse a internet através de uma interface WAN, com **IP Forward habilitado e regras de NAT persistentes via iptables**.
-
-**Uso:**
-
-```bash
-ansible-playbook -i hosts.ini gateway_nat.yml -k -K
-```
-
-### auditoria_rede.yml
-Playbook Ansible para **auditoria básica de rede em servidores Linux**, coletando interfaces, rotas, portas e conectividade, com geração de relatório local no host.
-
-**Uso:**
-
-```bash
-ansible-playbook -i hosts.ini auditoria_rede.yml -k -K
-```
-
-### netdata_docker.yml
-Playbook Ansible para **deploy do Netdata via Docker**, automatizando instalação do Docker, execução do container e liberação de acesso via firewall, com geração de relatório de acesso ao monitoramento.
-
-**Uso:**
-
-```bash
-ansible-playbook -i hosts.ini netdata_docker.yml -k -K
-```
-
-## Estrutura do Repositório
-```
-
 automation-network-ansible/
 ├── diagnostics/
 │   └── auditoria_rede.yml
@@ -89,3 +72,12 @@ automation-network-ansible/
 ├── NOTA.md
 └── README.md
 ```
+---
+
+## 🚀 Diferencial
+
+- Automação de infraestrutura com Ansible (Infra as Code)  
+- Provisionamento e configuração de servidores  
+- Deploy automatizado de serviços  
+- Organização modular de playbooks  
+- Foco em cenários reais de ambiente corporativo  
