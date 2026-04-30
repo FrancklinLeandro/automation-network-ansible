@@ -2,12 +2,12 @@
 
 ## 🎯 Objetivo
 
-Repositório de automação com **Ansible** voltado para **infraestrutura Linux, redes e operações**, com foco em **provisionamento, padronização e deploy de serviços**.
+Repositório de automação com **Ansible** voltado para **infraestrutura Linux, administração de sistemas e operações**, com foco em **provisionamento, padronização e deploy de serviços**.
 
 Os playbooks foram desenvolvidos para automatizar cenários reais de:
 
-- Provisionamento de servidores Linux  
-- Configuração de rede e gateway  
+- Provisionamento e configuração de servidores Linux  
+- Administração de infraestrutura e serviços  
 - Monitoramento de infraestrutura  
 - Auditoria e troubleshooting  
 - Deploy automatizado de serviços  
@@ -19,6 +19,7 @@ Os playbooks foram desenvolvidos para automatizar cenários reais de:
 Os playbooks simulam atividades comuns em ambientes de:
 
 - Infraestrutura Linux  
+- Administração de sistemas  
 - NOC (Network Operations Center)  
 - Operações de rede  
 - Automação de ambientes (Infra as Code)  
@@ -31,7 +32,7 @@ Os playbooks simulam atividades comuns em ambientes de:
 - Instalação automatizada de ferramentas  
 - Configuração de gateway NAT (roteamento e NAT)  
 - Gerenciamento de firewall com iptables  
-- Auditoria de rede e coleta de informações  
+- Auditoria de sistema e rede  
 - Deploy de monitoramento com Docker  
 - Execução remota de tarefas administrativas  
 
@@ -51,7 +52,7 @@ Provisionamento inicial de servidores Linux com instalação de ferramentas e co
 Configuração de servidor como **Gateway NAT**, com IP Forward e regras persistentes
 
 ### 🔍 auditoria_rede.yml
-Auditoria de rede com coleta de interfaces, rotas, portas e conectividade
+Auditoria de sistema e rede com coleta de interfaces, rotas, portas e conectividade
 
 ### 📊 netdata_docker.yml
 Deploy automatizado de monitoramento com **Netdata via Docker**
@@ -77,7 +78,7 @@ automation-network-ansible/
 ## 🚀 Diferencial
 
 - Automação de infraestrutura com Ansible (Infra as Code)  
-- Provisionamento e configuração de servidores  
+- Administração e provisionamento de servidores Linux  
 - Deploy automatizado de serviços  
 - Organização modular de playbooks  
-- Foco em cenários reais de ambiente corporativo  
+- Foco em cenários reais de ambiente corporativo    
